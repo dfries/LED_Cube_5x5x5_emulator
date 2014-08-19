@@ -121,31 +121,39 @@ void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
 	}
 
 	for(uint8_t i=0; i<iterations; ++i)
-	for(uint8_t s=0; s<SequenceCount; ++s)
 	{
-		Step &step = Sequence[i];
-		// set layrs layers for this pattern
-		for(uint8_t l=0; l<DIM; ++l)
+		for(uint8_t s=0; s<SequenceCount; ++s)
 		{
-			uint8_t layer_bit = 1<<l;
-			SetLayerEnable(l, step.layers_enabled & layer_bit);
-		}
-		// wait to enable until the desired value is written,
-		// then keep it on until all patterns for this layer
-		// and decoder combination are sent
-		bool first = true;
-		for(uint8_t v=0; v<8; ++v)
-		{
-			uint8_t select = 1<<v;
-			if(!(step.value & select))
-				continue;
+			Step &step = Sequence[i];
+			// set layrs layers for this pattern
+			for(uint8_t l=0; l<DIM; ++l)
+			{
+				uint8_t layer_bit = 1<<l;
+				SetLayerEnable(l,
+					step.layers_enabled & layer_bit);
+			}
+			// wait to enable until the desired value is written,
+			// then keep it on until all patterns for this layer
+			// and decoder combination are sent
+			bool first = true;
+			for(uint8_t v=0; v<8; ++v)
+			{
+				uint8_t select = 1<<v;
+				if(!(step.value & select))
+					continue;
 
-			InternalSetDecoderValue(step.decoder, v);
-			if(first)
-				InternalSetDecoderEnable(step.decoder, 1);
-			IO_Delay(LED_Delay);
+				InternalSetDecoderValue(step.decoder, v);
+				if(first)
+				{
+					InternalSetDecoderEnable(step.decoder,
+						1);
+				}
+				IO_Delay(LED_Delay);
+			}
+			InternalSetDecoderEnable(step.decoder, 0);
 		}
-		InternalSetDecoderEnable(step.decoder, 0);
+		for(uint8_t j=0; j<ex_delay; ++j) 
+			IO_Delay(LED_Delay);
 	}
 }
 
