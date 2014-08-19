@@ -52,14 +52,11 @@ public:
 	// from one pattern to the next
 	uint8_t Run(int iterations, uint8_t ex_delay = 0);
 
-	// array of layer, row with the lower 5 bits being the column
+	// array of layer, row, with the lower 5 bits being the column
 	// This is a layer, row, column physical arrangement of the LEDs.
 	uint8_t ByPosition[DIM][DIM];
-private:
-	// array of decoder, layer, with a bit per LED
-	// This is the LEDS connected to each decoder arrangement
-	uint8_t ByDecoder[DecoderCount][DIM];
 
+private:
 	// holds the data required for one combination of decoder and
 	// levels enabled for that decoder
 	struct Step
@@ -67,7 +64,7 @@ private:
 		// the one decoder to modify
 		uint8_t decoder;
 		// bit field for the LEDs that are on
-		uint8_t leds;
+		uint8_t value;
 		// bit field for the rows that are enabled
 		uint8_t rows_enabled;
 	};
