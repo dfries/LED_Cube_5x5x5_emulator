@@ -17,7 +17,9 @@
 
 #include "Cube.h"
 
-Cube::Cube()
+Cube::Cube() :
+	SequenceCount(0),
+	LED_Delay(0)
 {
 	Clear();
 }
@@ -87,7 +89,7 @@ void Cube::Setup()
 			// some LEDs are on, this step will be used
 			++SequenceCount;
 			step.decoder = d;
-			step.rows_enabled = layer_bit;
+			step.layers_enabled = layer_bit;
 			used |= layer_bit;
 			// see if any of the next layers have the same pattern
 			for(uint8_t n=l+1; n<DIM; ++n)
@@ -97,7 +99,7 @@ void Cube::Setup()
 					continue;
 				if(ByDecoder[d][n] == step.value)
 				{
-					step.rows_enabled = layer_bit;
+					step.layers_enabled = layer_bit;
 					used |= layer_bit;
 				}
 			}
@@ -107,6 +109,44 @@ void Cube::Setup()
 
 void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
 {
+	// disable layers
+	for(uint8_t l=0; l<DIM; ++l)
+	{
+		SetLayerEnable(l, 0);
+	}
+	// disable decoders
+	for(uint8_t d=0; d<DecoderCount; ++d)
+	{
+		InternalSetDecoderEnable(d, 0);
+	}
+
+	for(uint8_t i=0; i<iterations; ++i)
+	for(uint8_t s=0; s<SequenceCount; ++s)
+	{
+		Step &step = Sequence[i];
+		// set layrs layers for this pattern
+		for(uint8_t l=0; l<DIM; ++l)
+		{
+			uint8_t layer_bit = 1<<l;
+			SetLayerEnable(l, step.layers_enabled & layer_bit);
+		}
+		// wait to enable until the desired value is written,
+		// then keep it on until all patterns for this layer
+		// and decoder combination are sent
+		bool first = true;
+		for(uint8_t v=0; v<8; ++v)
+		{
+			uint8_t select = 1<<v;
+			if(!(step.value & select))
+				continue;
+
+			InternalSetDecoderValue(step.decoder, v);
+			if(first)
+				InternalSetDecoderEnable(step.decoder, 1);
+			IO_Delay(LED_Delay);
+		}
+		InternalSetDecoderEnable(step.decoder, 0);
+	}
 }
 
 uint8_t Cube::Run(int iterations, uint8_t ex_delay)

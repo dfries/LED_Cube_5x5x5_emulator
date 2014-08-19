@@ -19,6 +19,8 @@
 
 #include <stdint.h>
 
+#include "IO.h"
+
 // setup for a 5x5x5 cube
 const uint8_t DIM = 5;
 // in reality 3 decoder chip and one pin, but just think of that one as a
@@ -30,18 +32,33 @@ const uint8_t DecoderCount = 4;
  * Once an arrangement is set, generate a sequence of steps required to
  * display the cube arrangement with the set of decoders available,
  * then output that sequence.
+ *
+ * Depending on the pattern different sequences are more optimal.
+ * Currently this is optimized for the same pattern on different layers,
+ * so as to enable all layers, then cycle one decoder through all the
+ * patterns before going on to the next layer or decoder.  This can have
+ * up to five LEDs on at a time.
+ * Alternatively one layer could be enabled, update all decoders to the
+ * first LED for that layer, delay, go on to the next LED, and then
+ * the next layer.  This can have up to 4 LEDs on at one time, although
+ * as one LED is directly connected to a pin it will mostly only have
+ * three LEDs on at one time.
+ * Depending on the pattern more symmetry could be found with up to 20
+ * LEDs on at a time.
  */
 class Cube
 {
 public:
 	Cube();
 
-	// Set all LEDs to 0
+	void SetLED_OnDelay(uint8_t delay) { LED_Delay = delay; }
+
+	// Set all LEDs to 0 in ByPosition
 	void Clear();
 
 	// create the sequence
 	void Setup();
-	// execute the sequence
+	// execute the sequence, add extra ex_delay at the end of each iteration
 	void Execute(uint8_t iterations, uint8_t ex_delay = 0);
 	// find out how many steps are in the sequence
 	uint8_t GetCount() const { return SequenceCount; }
@@ -65,13 +82,36 @@ private:
 		uint8_t decoder;
 		// bit field for the LEDs that are on
 		uint8_t value;
-		// bit field for the rows that are enabled
-		uint8_t rows_enabled;
+		// bit field for the layers that are enabled
+		uint8_t layers_enabled;
 	};
 	// current sequence, worst case number if each decoder has a
 	// different pattern at each level
 	Step Sequence[DecoderCount * DIM];
 	uint8_t SequenceCount;
+	// time to hold each output before going to the next pattern
+	uint8_t LED_Delay;
+
+	// deal with the 4th decoder being a direct pin connection
+	static void InternalSetDecoderEnable(uint8_t decoder, uint8_t enable)
+	{
+		if(decoder == 3)
+		{
+			if(!enable)
+				IO_SetPin(25, 0);
+		}
+		else
+		{
+			SetDecoderEnable(decoder, enable);
+		}
+	}
+	static void InternalSetDecoderValue(uint8_t decoder, uint8_t value)
+	{
+		if(decoder == 3)
+			IO_SetPin(25, value);
+		else
+			SetDecoderValue(decoder, value);
+	}
 };
 
 #endif // __CUBE_H__
