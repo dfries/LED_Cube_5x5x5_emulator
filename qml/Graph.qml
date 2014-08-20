@@ -36,11 +36,36 @@ Canvas
 		for(var y=0; y<dim; ++y)
 		{
 			ctx.beginPath()
-			ctx.arc(x * x_inc, y * y_inc, 9, 5/6*Math.PI, Math.PI/6)
-			if(model[x][c][y])
+			ctx.arc(x * x_inc, height - y * y_inc, 9,
+				5/6*Math.PI, Math.PI/6)
+			// model[layer][column][row]
+			// make layer increase to the top of the screen
+			var value = model[y][c][x]
+			if(value)
+			{
+				switch(value)
+				{
+				case 1:
+					ctx.fillStyle = "#60ffffff"
+					break;
+				case 2:
+					ctx.fillStyle = "#90ffff80"
+					break;
+				case 3:
+					ctx.fillStyle = "#b0ffff00"
+					break;
+				case 4:
+					ctx.fillStyle = "#ffff0000"
+					break;
+				default:
+					ctx.fillStyle = "white"
+				}
 				ctx.fill();
+			}
 			else
+			{
 				ctx.stroke();
+			}
 		}
 	}
 	onPaint:
@@ -52,7 +77,7 @@ Canvas
 		ctx.lineWidth = 1.9
 
 		// some centering
-		ctx.translate(x_inc*1.4, y_inc*1.4)
+		ctx.translate(x_inc*1.4, -y_inc/2)
 		// something of a perspective look
 		var s = .98
 		for(var c=0; c<dim; ++c)
