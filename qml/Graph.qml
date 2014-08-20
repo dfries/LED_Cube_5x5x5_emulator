@@ -32,7 +32,6 @@ Canvas
 	renderStrategy: Canvas.FramebufferObject
 	function drawLayer(ctx, c)
 	{
-		var m = 0
 		for(var x=0; x<dim; ++x)
 		for(var y=0; y<dim; ++y)
 		{
@@ -42,18 +41,15 @@ Canvas
 			// model[layer][column][row]
 			// make layer increase to the top of the screen
 			var value = model[y][c][x]
-			var m;
-			if(value > m)
-				m = value;
 			if(value)
 			{
 				var a = value/128;
 				ctx.fillStyle = Qt.rgba(255, 0, 0, a)
-				if(value < 16)
+				if(value < 32)
 					ctx.fillStyle = Qt.rgba(255, 0, 0, a)
-				else if(value < 32)
+				else if(value < 64)
 					ctx.fillStyle = Qt.rgba(255, 128, 0, a)
-				else if(value < 48)
+				else if(value < 96)
 					ctx.fillStyle = Qt.rgba(255, 255, 0, a)
 				else
 					ctx.fillStyle = Qt.rgba(255, 255, 255,
@@ -65,7 +61,6 @@ Canvas
 				ctx.stroke();
 			}
 		}
-		console.log('m', m)
 	}
 	onPaint:
 	{
