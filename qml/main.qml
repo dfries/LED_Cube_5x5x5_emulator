@@ -57,7 +57,7 @@ Rectangle
 		Button
 		{
 			text: "Animate"
-			onClicked: if(anim.runing)
+			onClicked: if(anim.running)
 					anim.stop()
 				else
 					anim.start()

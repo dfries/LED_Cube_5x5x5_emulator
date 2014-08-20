@@ -41,6 +41,43 @@ static void InOrder(int sequence)
 	cube.SetLED(num, 1);
 }
 
+static void Perimeter(int sequence)
+{
+	static uint8_t layer, row, column;
+	static bool enable = true;
+	if(sequence == 0)
+	{
+		layer = row = column = 0;
+		enable = true;
+		cube.Clear();
+	}
+	cube[layer][row][column] = enable;
+	if(row == 0 || row == 4)
+	{
+		++column;
+	}
+	else
+	{
+		column += 4;
+	}
+	if(column > 4)
+	{
+		++row;
+		column = 0;
+	}
+	if(row > 4)
+	{
+		++layer;
+		row = 0;
+		column = 0;
+		if(layer > 4)
+		{
+			layer = 0;
+			enable = !enable;
+		}
+	}
+}
+
 QVariantList SetCubePattern(int pattern, int sequence)
 {
 	Emu_ClearIntensity();
@@ -51,6 +88,9 @@ QVariantList SetCubePattern(int pattern, int sequence)
 		break;
 	case 1:
 		InOrder(sequence);
+		break;
+	case 2:
+		Perimeter(sequence);
 		break;
 	default:
 		// light of the corners

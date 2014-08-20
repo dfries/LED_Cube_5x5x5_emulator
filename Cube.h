@@ -53,6 +53,74 @@ public:
 
 	void SetLED(uint8_t num, bool enable);
 
+
+	// allows
+	// cube[layer][row][column] = true
+	// bool value = cube[layer][row][column];
+	// if(cube[layer][row][column] == true )
+	class BracketColumn
+	{
+	public:
+		BracketColumn(Cube &cube, uint8_t layer, uint8_t row,
+			uint8_t column) :
+			CubeObj(cube), Layer(layer), Row(row), Bit(1<<column) {}
+		BracketColumn& operator=(bool on)
+		{
+			if(on)
+				CubeObj.ByPosition[Layer][Row] |= Bit;
+			else
+				CubeObj.ByPosition[Layer][Row] &= ~Bit;
+			return *this;
+		}
+		bool operator==(bool rhs)
+		{
+			bool on = CubeObj.ByPosition[Layer][Row] & Bit;
+			return on == rhs;
+		}
+		bool operator!=(bool rhs)
+		{
+			return !(*this == rhs);
+		}
+		operator bool() const
+		{
+			return CubeObj.ByPosition[Layer][Row] & Bit;
+		}
+	private:
+		Cube &CubeObj;
+		// Bit is the column value already turned into a bit field.
+		uint8_t Layer, Row, Bit;
+	};
+	class BracketRow
+	{
+	public:
+		BracketRow(Cube &cube, uint8_t layer, uint8_t row) :
+			CubeObj(cube), Layer(layer), Row(row) {}
+		BracketColumn operator[](uint8_t column)
+		{
+			return BracketColumn(CubeObj, Layer, Row, column);
+		}
+	private:
+		Cube &CubeObj;
+		uint8_t Layer, Row;
+	};
+	class BracketLayer
+	{
+	public:
+		BracketLayer(Cube &cube, uint8_t layer) : CubeObj(cube),
+			Layer(layer) {}
+		BracketRow operator[](uint8_t row)
+		{
+			return BracketRow(CubeObj, Layer, row);
+		}
+	private:
+		Cube &CubeObj;
+		uint8_t Layer;
+	};
+	BracketLayer operator[](uint8_t layer)
+	{
+		return BracketLayer(*this, layer);
+	}
+
 	void SetLED_OnDelay(uint8_t delay) { LED_Delay = delay; }
 
 	// Set all LEDs to 0 in ByPosition
