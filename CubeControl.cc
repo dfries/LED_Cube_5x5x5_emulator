@@ -104,6 +104,50 @@ static void Shift(int sequence)
 		cube.Shift(-3, true);
 }
 
+static void Fade(int sequence)
+{
+	cube.Clear();
+	const char *word = "ABIGAIL";
+	switch(word[sequence%7])
+	{
+	case 'A':
+		cube.ByPosition[4][0] = 0b01110;
+		cube.ByPosition[3][0] = 0b01010;
+		cube.ByPosition[2][0] = 0b01110;
+		cube.ByPosition[1][0] = 0b01010;
+		cube.ByPosition[0][0] = 0b01010;
+		break;
+	case 'B':
+		cube.ByPosition[4][0] = 0b01110;
+		cube.ByPosition[3][0] = 0b01010;
+		cube.ByPosition[2][0] = 0b01110;
+		cube.ByPosition[1][0] = 0b10010;
+		cube.ByPosition[0][0] = 0b01110;
+		break;
+	case 'G':
+		cube.ByPosition[4][0] = 0b00110;
+		cube.ByPosition[3][0] = 0b00001;
+		cube.ByPosition[2][0] = 0b11001;
+		cube.ByPosition[1][0] = 0b10001;
+		cube.ByPosition[0][0] = 0b01110;
+		break;
+	case 'I':
+		cube.ByPosition[4][0] = 0b01110;
+		cube.ByPosition[3][0] = 0b00100;
+		cube.ByPosition[2][0] = 0b00100;
+		cube.ByPosition[1][0] = 0b00100;
+		cube.ByPosition[0][0] = 0b01110;
+		break;
+	case 'L':
+		cube.ByPosition[4][0] = 0b00010;
+		cube.ByPosition[3][0] = 0b00010;
+		cube.ByPosition[2][0] = 0b00010;
+		cube.ByPosition[1][0] = 0b00010;
+		cube.ByPosition[0][0] = 0b01110;
+		break;
+	}
+}
+
 QVariantList SetCubePattern(int pattern, int sequence)
 {
 	Emu_ClearIntensity();
@@ -120,6 +164,9 @@ QVariantList SetCubePattern(int pattern, int sequence)
 		break;
 	case 3:
 		Shift(sequence);
+		break;
+	case 4:
+		Fade(sequence);
 		break;
 	default:
 		// light of the corners
