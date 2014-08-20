@@ -109,12 +109,12 @@ static void Shift(int sequence)
 	cube.Run(64);
 }
 
-static void Fade(int sequence)
+static void drawLetter(char c)
 {
-	cube.Clear();
-	const char *word = "ABIGAIL";
-	switch(word[sequence%7])
+	switch(c)
 	{
+	// Specify them mirror image left to right, as the most significant
+	// bit (MSB) is the higher value and on the right.
 	case 'A':
 		cube.ByPosition[4][0] = 0b01110;
 		cube.ByPosition[3][0] = 0b01010;
@@ -150,7 +150,76 @@ static void Fade(int sequence)
 		cube.ByPosition[1][0] = 0b00010;
 		cube.ByPosition[0][0] = 0b01110;
 		break;
+	case 0:
+	case ' ' :
+		break;
+	default:
+		cube.ByPosition[4][0] = 0b01110;
+		cube.ByPosition[3][0] = 0b01010;
+		cube.ByPosition[2][0] = 0b01000;
+		cube.ByPosition[1][0] = 0b00100;
+		cube.ByPosition[0][0] = 0b00100;
+		break;
 	}
+}
+
+static void Fade(int sequence)
+{
+	cube.Clear();
+	const char *word = "ABIGAIL";
+	const int total = 20;
+	int step = sequence % total;
+	char letter = word[sequence/total%sizeof(word)];
+	drawLetter(letter);
+	if(step <= 4)
+	{
+		cube.Run(64);
+		return;
+	}
+	if(step == 5)
+	{
+		cube.Run(32);
+		cube.Shift(2, false);
+		cube.Run(64);
+		return;
+	}
+
+	for(int i=0; i<step-6; ++i)
+		cube.Shift(2, false);
+
+	cube.Run(16);
+	cube.Shift(2, false);
+	cube.Run(32);
+	cube.Shift(2, false);
+	cube.Run(64);
+
+	if(step < 9)
+		return;
+
+	drawLetter(letter);
+	for(int i=0; i<4; ++i)
+		cube.Shift(2, false);
+	cube.Shift(-1, false);
+	if(step == 9)
+	{
+		cube.Run(64);
+		return;
+	}
+	if(step == 10)
+	{
+		cube.Run(32);
+		cube.Shift(-1, false);
+		cube.Run(64);
+		return;
+	}
+
+	for(int i=0; i<step-11; ++i)
+		cube.Shift(-1, false);
+
+	cube.Run(16);
+	cube.Shift(-1, false);
+	cube.Run(32);
+	cube.Shift(-1, false);
 	cube.Run(64);
 }
 
