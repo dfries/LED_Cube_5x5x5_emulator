@@ -112,7 +112,7 @@ void Cube::Setup()
 					continue;
 				if(ByDecoder[d][n] == step.value)
 				{
-					step.layers_enabled = layer_bit;
+					step.layers_enabled |= layer_bit;
 					used |= layer_bit;
 				}
 			}
