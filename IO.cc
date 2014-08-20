@@ -21,6 +21,9 @@
 #include <QDebug>
 
 // emulation implementation of the IO routines required for the Cube
+// Each intersection of layer and decoder (or pin) is seen as on and will
+// contribute to the intensity of the final LED at that location, if either
+// is off the intensity doesn't change at that location.
 
 // array of decoder, layer, LED intensity
 // This is the LEDS connected to each decoder arrangement.
@@ -33,7 +36,36 @@ static int ByDecoder[DecoderCount][DIM][8];
 static uint8_t LayersEnabled;
 // bit field of currently enabled decoders
 static uint8_t DecodersEnabled;
+// last set value for each decoder
+static uint8_t DecoderValue[DecoderCount];
 
+// increase the intensity at any intersection of layer and decoder
+// enabled LEDs, call at each pin transition not just on,
+// because any other intersection that is powered will be getting brighter
+static void BumpIntensity()
+{
+	// easy out, nothing will light
+	if(!LayersEnabled || !DecodersEnabled)
+		return;
+	for(uint8_t d=0; d<DecoderCount; ++d)
+	{
+		uint8_t decoder_bit = 1<<d;
+		if(!(DecodersEnabled & decoder_bit))
+			continue;
+		uint8_t value = DecoderValue[d];
+		for(uint8_t l=0; l<DIM; ++l)
+		{
+			uint8_t layer_bit = 1<<l;
+			if(!(LayersEnabled & layer_bit))
+				continue;
+
+			++ByDecoder[d][l][value];
+		}
+	}
+}
+
+// zero's the intensity, all LEDs will appear off until something triggers
+// them to be set again
 void Emu_ClearIntensity()
 {
 	for(uint8_t d=0; d<DecoderCount; ++d)
@@ -42,54 +74,43 @@ void Emu_ClearIntensity()
 	{
 		ByDecoder[d][l][i] = 0;
 	}
+	// If they really wanted it dark they would turn everything off first,
+	// just a reminder to not leave anything on when you don't want
+	// the LED on.
+	BumpIntensity();
 }
 
+// for the single line of LEDs directly connected to one pin
 void IO_SetPin(uint8_t /*pin*/, uint8_t value)
 {
-	// off means the intensity doesn't increase
-	if(!value)
-		return;
-
-	// one LED per layer, on or off
-	for(uint8_t l=0; l<DIM; ++l)
-	{
-		uint8_t layer_bit = 1<<l;
-		bool enabled = LayersEnabled & layer_bit;
-		if(!enabled)
-			continue;
-
-		++ByDecoder[3][l][0];
-	}
+	// The single pin is treated specially, to work like the other
+	// decoders it functions as if the decoder input is always 0,
+	// causing output pin 0 to always be 1 based on enable, and the
+	// pin value controls enable.
+	SetDecoderEnable(3, value);
+	BumpIntensity();
 }
 
+// no delay for the emulator, except to contribute to intensity
 void IO_Delay(uint8_t /*delay*/)
 {
+	BumpIntensity();
 }
 
 void SetDecoderValue(uint8_t decoder, uint8_t value)
 {
-	// off means the intensity doesn't increase
-	if(!value)
-		return;
-
-	for(uint8_t l=0; l<DIM; ++l)
-	{
-		uint8_t layer_bit = 1<<l;
-		bool enabled = LayersEnabled & layer_bit;
-		if(!enabled)
-			continue;
-
-		++ByDecoder[decoder][l][value];
-	}
+	DecoderValue[decoder] = value;
+	BumpIntensity();
 }
 
 void SetDecoderEnable(uint8_t decoder, uint8_t enable)
 {
-	uint8_t decoer_bit = 1<<decoder;
+	uint8_t decoder_bit = 1<<decoder;
 	if(enable)
-		DecodersEnabled |= decoer_bit;
+		DecodersEnabled |= decoder_bit;
 	else
-		DecodersEnabled &= ~decoer_bit;
+		DecodersEnabled &= ~decoder_bit;
+	BumpIntensity();
 }
 
 void SetLayerEnable(uint8_t layer, uint8_t enable)
@@ -99,6 +120,7 @@ void SetLayerEnable(uint8_t layer, uint8_t enable)
 		LayersEnabled |= layer_bit;
 	else
 		LayersEnabled &= ~layer_bit;
+	BumpIntensity();
 }
 
 QVariantList Emu_GetCubeIntensity()
