@@ -90,7 +90,6 @@ void Cube::Setup()
 			++SequenceCount;
 			step.decoder = d;
 			step.layers_enabled = layer_bit;
-			used = layer_bit;
 			// see if any of the next layers have the same pattern
 			for(uint8_t n=l+1; n<DIM; ++n)
 			{
@@ -124,7 +123,7 @@ void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
 	{
 		for(uint8_t s=0; s<SequenceCount; ++s)
 		{
-			Step &step = Sequence[i];
+			Step &step = Sequence[s];
 			// set layers for this pattern
 			for(uint8_t l=0; l<DIM; ++l)
 			{

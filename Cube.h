@@ -97,8 +97,7 @@ private:
 	{
 		if(decoder == 3)
 		{
-			if(!enable)
-				IO_SetPin(25, 0);
+			IO_SetPin(25, enable);
 		}
 		else
 		{
@@ -107,10 +106,11 @@ private:
 	}
 	static void InternalSetDecoderValue(uint8_t decoder, uint8_t value)
 	{
+		// only a value of 0 is valid for decoder 3 when treating it
+		// as a one pin decoder
 		if(decoder == 3)
-			IO_SetPin(25, value);
-		else
-			SetDecoderValue(decoder, value);
+			return;
+		SetDecoderValue(decoder, value);
 	}
 };
 

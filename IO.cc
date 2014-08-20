@@ -25,13 +25,14 @@
 // contribute to the intensity of the final LED at that location, if either
 // is off the intensity doesn't change at that location.
 
+const int DECODER_BITS = 8;
 // array of decoder, layer, LED intensity
 // This is the LEDS connected to each decoder arrangement.
 // The hardware works by a pulse with modulation and fast refresh,
 // for the emulator each Set call will increase the intensity of the
 // given LED to accmulate an intensity which will need to periodically
 // be cleared.
-static int ByDecoder[DecoderCount][DIM][8];
+static int ByDecoder[DecoderCount][DIM][DECODER_BITS];
 // bit field of currently enabled layers
 static uint8_t LayersEnabled;
 // bit field of currently enabled decoders
@@ -70,7 +71,7 @@ void Emu_ClearIntensity()
 {
 	for(uint8_t d=0; d<DecoderCount; ++d)
 	for(uint8_t l=0; l<DIM; ++l)
-	for(uint8_t i=0; i<DIM; ++i)
+	for(uint8_t i=0; i<DECODER_BITS; ++i)
 	{
 		ByDecoder[d][l][i] = 0;
 	}
@@ -131,43 +132,43 @@ QVariantList Emu_GetCubeIntensity()
 		QVariantList column;
 		QVariantList row;
 
-		row.push_back(ByDecoder[l][0][0]);
-		row.push_back(ByDecoder[l][0][1]);
-		row.push_back(ByDecoder[l][0][2]);
-		row.push_back(ByDecoder[l][0][3]);
-		row.push_back(ByDecoder[l][0][4]);
+		row.push_back(ByDecoder[0][l][0]);
+		row.push_back(ByDecoder[0][l][1]);
+		row.push_back(ByDecoder[0][l][2]);
+		row.push_back(ByDecoder[0][l][3]);
+		row.push_back(ByDecoder[0][l][4]);
 		column.push_back(row);
 		row.clear();
 
-		row.push_back(ByDecoder[l][0][5]);
-		row.push_back(ByDecoder[l][0][6]);
-		row.push_back(ByDecoder[l][0][7]);
-		row.push_back(ByDecoder[l][1][0]);
-		row.push_back(ByDecoder[l][1][1]);
+		row.push_back(ByDecoder[0][l][5]);
+		row.push_back(ByDecoder[0][l][6]);
+		row.push_back(ByDecoder[0][l][7]);
+		row.push_back(ByDecoder[1][l][0]);
+		row.push_back(ByDecoder[1][l][1]);
 		column.push_back(row);
 		row.clear();
 
-		row.push_back(ByDecoder[l][1][2]);
-		row.push_back(ByDecoder[l][1][3]);
-		row.push_back(ByDecoder[l][1][4]);
-		row.push_back(ByDecoder[l][1][5]);
-		row.push_back(ByDecoder[l][1][6]);
+		row.push_back(ByDecoder[1][l][2]);
+		row.push_back(ByDecoder[1][l][3]);
+		row.push_back(ByDecoder[1][l][4]);
+		row.push_back(ByDecoder[1][l][5]);
+		row.push_back(ByDecoder[1][l][6]);
 		column.push_back(row);
 		row.clear();
 
-		row.push_back(ByDecoder[l][1][7]);
-		row.push_back(ByDecoder[l][2][0]);
-		row.push_back(ByDecoder[l][2][1]);
-		row.push_back(ByDecoder[l][2][2]);
-		row.push_back(ByDecoder[l][2][3]);
+		row.push_back(ByDecoder[1][l][7]);
+		row.push_back(ByDecoder[2][l][0]);
+		row.push_back(ByDecoder[2][l][1]);
+		row.push_back(ByDecoder[2][l][2]);
+		row.push_back(ByDecoder[2][l][3]);
 		column.push_back(row);
 		row.clear();
 
-		row.push_back(ByDecoder[l][2][4]);
-		row.push_back(ByDecoder[l][2][5]);
-		row.push_back(ByDecoder[l][2][6]);
-		row.push_back(ByDecoder[l][2][7]);
-		row.push_back(ByDecoder[l][3][0]);
+		row.push_back(ByDecoder[2][l][4]);
+		row.push_back(ByDecoder[2][l][5]);
+		row.push_back(ByDecoder[2][l][6]);
+		row.push_back(ByDecoder[2][l][7]);
+		row.push_back(ByDecoder[3][l][0]);
 		column.push_back(row);
 
 		layer.push_back(column);
