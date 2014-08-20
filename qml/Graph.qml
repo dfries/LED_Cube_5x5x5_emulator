@@ -36,7 +36,7 @@ Canvas
 		for(var y=0; y<dim; ++y)
 		{
 			ctx.beginPath()
-			ctx.arc(x * x_inc, y * y_inc, 9, Math.PI, 0)
+			ctx.arc(x * x_inc, y * y_inc, 9, 5/6*Math.PI, Math.PI/6)
 			if(model[x][c][y])
 				ctx.fill();
 			else
