@@ -24,6 +24,19 @@ Cube::Cube() :
 	Clear();
 }
 
+void Cube::SetLED(uint8_t num, bool enable)
+{
+	uint8_t layer = num / 25;
+	uint8_t mod = num % 25;
+	uint8_t row = mod / 5;
+	uint8_t column = mod % 5;
+	uint8_t bit = 1<<column;
+	if(enable)
+		ByPosition[layer][row] |= bit;
+	else
+		ByPosition[layer][row] &= ~bit;
+}
+
 void Cube::Clear()
 {
 	for(uint8_t l=0; l<DIM; ++l)

@@ -51,6 +51,8 @@ class Cube
 public:
 	Cube();
 
+	void SetLED(uint8_t num, bool enable);
+
 	void SetLED_OnDelay(uint8_t delay) { LED_Delay = delay; }
 
 	// Set all LEDs to 0 in ByPosition
