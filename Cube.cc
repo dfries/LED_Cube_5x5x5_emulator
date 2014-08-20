@@ -16,6 +16,7 @@
 */
 
 #include "Cube.h"
+#include <string.h>
 
 Cube::Cube() :
 	SequenceCount(0),
@@ -35,6 +36,97 @@ void Cube::SetLED(uint8_t num, bool enable)
 		ByPosition[layer][row] |= bit;
 	else
 		ByPosition[layer][row] &= ~bit;
+}
+
+void Cube::Shift(char axis, bool wrap)
+{
+	uint8_t layer[DIM];
+	if(axis == 1)
+	{
+		// store off the top layer
+		if(wrap)
+			memcpy(layer, ByPosition[4], sizeof(layer));
+		// move everything up
+		for(int i=3; i>=0; --i)
+			memcpy(ByPosition[i+1], ByPosition[i],
+				sizeof(ByPosition[i+1]));
+		// restore or clear the bottom layer
+		if(wrap)
+			memcpy(ByPosition[0], layer, sizeof(*ByPosition));
+		else
+			memset(ByPosition[0], 0, sizeof(*ByPosition));
+	}
+	else if(axis == -1)
+	{
+		// store off the bottom layer
+		if(wrap)
+			memcpy(layer, ByPosition[0], sizeof(layer));
+		// move everything down
+		for(int i=1; i<DIM; ++i)
+			memcpy(ByPosition[i-1], ByPosition[i],
+				sizeof(*ByPosition));
+		// restore or clear the top layer
+		if(wrap)
+			memcpy(ByPosition[4], layer, sizeof(*ByPosition));
+		else
+			memset(ByPosition[4], 0, sizeof(*ByPosition));
+	}
+	else if(axis == 2)
+	{
+		for(int i=0; i<DIM; ++i)
+		{
+			uint8_t tmp = ByPosition[i][4];
+			for(int j=3; j>=0; --j)
+				ByPosition[i][j+1] = ByPosition[i][j];
+			if(wrap)
+				ByPosition[i][0] = tmp;
+			else
+				ByPosition[i][0] = 0;
+		}
+	}
+	else if(axis == -2)
+	{
+		for(int i=0; i<DIM; ++i)
+		{
+			uint8_t tmp = ByPosition[i][0];
+			for(int j=1; j<DIM; ++j)
+				ByPosition[i][j-1] = ByPosition[i][j];
+			if(wrap)
+				ByPosition[i][4] = tmp;
+			else
+				ByPosition[i][4] = 0;
+		}
+	}
+	else if(axis == 3)
+	{
+		for(int i=0; i<DIM; ++i)
+		{
+			for(int j=0; j<DIM; ++j)
+			{
+				uint8_t bits = ByPosition[i][j];
+				bits <<= 1;
+				if(wrap)
+					bits |= bits >> 5;
+				bits &= 0b11111;
+				ByPosition[i][j] = bits;
+			}
+		}
+	}
+	else if(axis == -3)
+	{
+		for(int i=0; i<DIM; ++i)
+		{
+			for(int j=0; j<DIM; ++j)
+			{
+				uint8_t bits = ByPosition[i][j];
+				uint8_t tmp = bits & 1;
+				bits >>= 1;
+				if(wrap)
+					bits |= tmp << 4;
+				ByPosition[i][j] = bits;
+			}
+		}
+	}
 }
 
 void Cube::Clear()

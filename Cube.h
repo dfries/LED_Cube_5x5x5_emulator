@@ -53,6 +53,10 @@ public:
 
 	void SetLED(uint8_t num, bool enable);
 
+	// axis, 1 is layer, 2 row, 3 column, -1, -2, -3 for the opposite
+	// direction, if wrap is true it will wrap around otherwise they
+	// are set to off
+	void Shift(char axis, bool wrap);
 
 	// allows
 	// cube[layer][row][column] = true

@@ -78,6 +78,32 @@ static void Perimeter(int sequence)
 	}
 }
 
+static void Shift(int sequence)
+{
+	if(sequence == 0)
+	{
+		cube.Clear();
+		// + in the center
+		for(int i=0; i<DIM; ++i)
+			cube.ByPosition[2][i] = 0b00100;
+		cube.ByPosition[2][2] = 0b11111;
+		return;
+	}
+	int index = (sequence-1) % 120;
+	if(index < 20)
+		cube.Shift(1, true);
+	else if(index < 40)
+		cube.Shift(-1, true);
+	else if(index < 60)
+		cube.Shift(2, true);
+	else if(index < 80)
+		cube.Shift(-2, true);
+	else if(index < 100)
+		cube.Shift(3, true);
+	else if(index < 120)
+		cube.Shift(-3, true);
+}
+
 QVariantList SetCubePattern(int pattern, int sequence)
 {
 	Emu_ClearIntensity();
@@ -91,6 +117,9 @@ QVariantList SetCubePattern(int pattern, int sequence)
 		break;
 	case 2:
 		Perimeter(sequence);
+		break;
+	case 3:
+		Shift(sequence);
 		break;
 	default:
 		// light of the corners
