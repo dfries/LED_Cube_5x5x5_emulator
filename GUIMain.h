@@ -32,7 +32,7 @@ public:
 
 	QVariantList GetData() const { return Data; }
 
-	Q_INVOKABLE void StepPattern(int pattern);
+	Q_INVOKABLE void StepPattern(int pattern, int sequence);
 
 protected:
 	void keyPressEvent(QKeyEvent *e);
@@ -42,7 +42,6 @@ signals:
 
 private:
 	QVariantList Data;
-	int Sequence;
 };
 
 #endif // _GUI_MAIN_

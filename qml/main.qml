@@ -67,20 +67,26 @@ Rectangle
 				interval: 66
 				repeat: true
 				running: false
-				onTriggered: GUIMain.StepPattern(pattern.text)
+				onTriggered: stepPattern()
 			}
 		}
 		TextField
 		{
 			id: pattern
 			text: "0"
+			onTextChanged: seq = 0
 		}
+	}
+	property int seq: 0
+	function stepPattern()
+	{
+		GUIMain.StepPattern(pattern.text, seq++)
 	}
 	Action
 	{
 		id: step
 		text: "&Step"
 		//shortcut: "Ctrl+S"
-		onTriggered: GUIMain.StepPattern(pattern.text)
+		onTriggered: stepPattern()
 	}
 }
