@@ -21,6 +21,7 @@
 
 #include <QVariant>
 #include <QDebug>
+#include <math.h>
 
 static Cube cube;
 
@@ -223,6 +224,48 @@ static void Fade(int sequence)
 	cube.Run(64);
 }
 
+static void Pong(int sequence)
+{
+	cube.Clear();
+	cube.ByPosition[1][2] = 1;
+	cube.ByPosition[2][1] = 1;
+	cube.ByPosition[2][2] = 1;
+	cube.ByPosition[2][3] = 1;
+	cube.ByPosition[3][2] = 1;
+	static int x = 0, y = 0;
+	if(sequence == 100000)
+		++y;
+	else if(sequence == 200000)
+		--y;
+	else if(sequence == 300000)
+		--x;
+	else if(sequence == 400000)
+		++x;
+
+	if(y>3)
+		y=3;
+	else if(y<-3)
+		y=-3;
+	if(x>3)
+		x=3;
+	else if(x<-3)
+		x=-3;
+
+	int sign = 1;
+	if(y<0)
+		sign = -1;
+	for(int i=0, stop=abs(y); i<stop; ++i)
+		cube.Shift(sign * 1, false);
+
+	sign = -1;
+	if(x<0)
+		sign = 1;
+	for(int i=0, stop=abs(x); i<stop; ++i)
+		cube.Shift(sign * 2, false);
+
+	cube.Run(64);
+}
+
 QVariantList SetCubePattern(int pattern, int sequence)
 {
 	Emu_ClearIntensity();
@@ -242,6 +285,9 @@ QVariantList SetCubePattern(int pattern, int sequence)
 		break;
 	case 4:
 		Fade(sequence);
+		break;
+	case 5:
+		Pong(sequence);
 		break;
 	default:
 		// light of the corners

@@ -89,4 +89,24 @@ Rectangle
 		//shortcut: "Ctrl+S"
 		onTriggered: stepPattern()
 	}
+	Action
+	{
+		shortcut: "I"
+		onTriggered: {seq = 100000; stepPattern();}
+	}
+	Action
+	{
+		shortcut: "K"
+		onTriggered: {seq = 200000; stepPattern();}
+	}
+	Action
+	{
+		shortcut: "J"
+		onTriggered: {seq = 300000; stepPattern();}
+	}
+	Action
+	{
+		shortcut: "L"
+		onTriggered: {seq = 400000; stepPattern();}
+	}
 }
