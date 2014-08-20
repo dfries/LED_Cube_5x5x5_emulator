@@ -19,6 +19,6 @@
 
 #include <QVariant>
 
-QVariantList SetCubePattern();
+QVariantList SetCubePattern(int pattern);
 
 #endif // __CUBE_CONTROL_H__

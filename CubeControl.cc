@@ -20,17 +20,30 @@
 #include "IO.h"
 
 #include <QVariant>
+#include <QDebug>
 
 static Cube cube;
 
-QVariantList SetCubePattern()
+QVariantList SetCubePattern(int pattern)
 {
 	Emu_ClearIntensity();
 	cube.Clear();
+	int layer = pattern % DIM;
+	qDebug() << "layer" << layer;
+	for(int i=0; i<DIM; ++i)
+		cube.ByPosition[layer][i] = 0b11111;
+	/*
+	int layer = (pattern / DIM ) % DIM;
+	int column = pattern % DIM;
+	qDebug() << "set led at" << layer << column;
+	cube.ByPosition[layer][column] = 1;
+	*/
+	/*
 	cube.Run(1);
 	cube.ByPosition[0][0] = 0x55;
 	cube.ByPosition[2][0] = 0x55;
 	cube.ByPosition[4][0] = 0x55;
+	*/
 	cube.Run(1);
 	return Emu_GetCubeIntensity();
 }

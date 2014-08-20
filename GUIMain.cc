@@ -25,10 +25,18 @@
 
 #include "CubeControl.h"
 
-GUIMain::GUIMain()
+GUIMain::GUIMain() :
+	Pattern(0)
 {
 	rootContext()->setContextProperty("GUIMain", this);
-	Data = SetCubePattern();
+	Data = SetCubePattern(Pattern);
+	DataChanged();
+}
+
+void GUIMain::StepPattern()
+{
+	Data = SetCubePattern(++Pattern);
+	DataChanged();
 }
 
 void GUIMain::keyPressEvent(QKeyEvent *e)
