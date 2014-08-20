@@ -24,42 +24,42 @@ Canvas
 	id: graph
 
 	property var model
+	property int dim: 5
+	property real x_inc: width/(dim+1)
+	property real y_inc: height/(dim+1)
 	onModelChanged: requestPaint()
 
 	renderStrategy: Canvas.FramebufferObject
+	function drawLayer(ctx, c)
+	{
+		for(var x=0; x<dim; ++x)
+		for(var y=0; y<dim; ++y)
+		{
+			ctx.beginPath()
+			ctx.arc(x * x_inc, y * y_inc, 9, Math.PI, 0)
+			if(model[x][c][y])
+				ctx.fill();
+			else
+				ctx.stroke();
+		}
+	}
 	onPaint:
 	{
 		var ctx = getContext('2d')
 		ctx.reset()
-		ctx.strokeStyle = "white"
+		ctx.strokeStyle = "#60ffffff"
+		ctx.fillStyle = "white"
 		ctx.lineWidth = 1.9
-		ctx.ellipse(width/4, height/4, width/5, height/7)
-		ctx.stroke()
-		console.log("model.length", model.length)
-		for(var pl in model)
+
+		// some centering
+		ctx.translate(x_inc*1.4, y_inc*1.4)
+		// something of a perspective look
+		var s = .98
+		for(var c=0; c<dim; ++c)
 		{
-			var layer = model[pl]
-			console.log("layer", pl)
-			for(var pc in layer)
-			{
-				var column = layer[pc]
-				console.log("column", pc, column)
-				/*
-				console.log("\trow len", column.length)
-				console.log("column", column)
-				for(var pr in column)
-				{
-					var row = column[pr]
-					console.log("\trow", row)
-				}
-				*/
-			}
+			drawLayer(ctx, c)
+			ctx.translate(-x_inc/9, -y_inc/5)
+			ctx.scale(s, s)
 		}
-		/*
-		ctx.save()
-		ctx.translate( , )
-		ctx.scale(.9)
-		ctx.restore();
-		*/
 	}
 }
