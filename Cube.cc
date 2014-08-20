@@ -33,6 +33,20 @@ void Cube::Clear()
 	}
 }
 
+void Cube::Reset()
+{
+	// disable layers
+	for(uint8_t l=0; l<DIM; ++l)
+	{
+		SetLayerEnable(l, 0);
+	}
+	// disable decoders
+	for(uint8_t d=0; d<DecoderCount; ++d)
+	{
+		InternalSetDecoderEnable(d, 0);
+	}
+}
+
 void Cube::Setup()
 {
 	// array of decoder, layer, with a bit per LED
@@ -108,17 +122,6 @@ void Cube::Setup()
 
 void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
 {
-	// disable layers
-	for(uint8_t l=0; l<DIM; ++l)
-	{
-		SetLayerEnable(l, 0);
-	}
-	// disable decoders
-	for(uint8_t d=0; d<DecoderCount; ++d)
-	{
-		InternalSetDecoderEnable(d, 0);
-	}
-
 	for(uint8_t i=0; i<iterations; ++i)
 	{
 		for(uint8_t s=0; s<SequenceCount; ++s)
@@ -159,6 +162,7 @@ void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
 
 uint8_t Cube::Run(int iterations, uint8_t ex_delay)
 {
+	Reset();
 	Setup();
 	Execute(iterations, ex_delay);
 	return GetCount();

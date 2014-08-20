@@ -56,6 +56,8 @@ public:
 	// Set all LEDs to 0 in ByPosition
 	void Clear();
 
+	// Clear() is for the future pattern, Reset() is the current pin output
+	void Reset();
 	// create the sequence
 	void Setup();
 	// execute the sequence, add extra ex_delay at the end of each iteration
