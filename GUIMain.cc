@@ -26,16 +26,16 @@
 #include "CubeControl.h"
 
 GUIMain::GUIMain() :
-	Pattern(0)
+	Sequence(0)
 {
 	rootContext()->setContextProperty("GUIMain", this);
-	Data = SetCubePattern(Pattern);
+	Data = SetCubePattern(0, Sequence);
 	DataChanged();
 }
 
-void GUIMain::StepPattern()
+void GUIMain::StepPattern(int pattern)
 {
-	Data = SetCubePattern(++Pattern);
+	Data = SetCubePattern(pattern, ++Sequence);
 	DataChanged();
 }
 

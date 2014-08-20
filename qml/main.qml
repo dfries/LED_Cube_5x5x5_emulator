@@ -54,12 +54,17 @@ Rectangle
 		{
 			action: step
 		}
+		TextField
+		{
+			id: pattern
+			text: "0"
+		}
 	}
 	Action
 	{
 		id: step
 		text: "&Step"
 		//shortcut: "Ctrl+S"
-		onTriggered: GUIMain.StepPattern()
+		onTriggered: GUIMain.StepPattern(pattern.text)
 	}
 }

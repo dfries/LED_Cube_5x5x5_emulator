@@ -24,14 +24,42 @@
 
 static Cube cube;
 
-QVariantList SetCubePattern(int pattern)
+static void LayerInc(int sequence)
 {
-	Emu_ClearIntensity();
 	cube.Clear();
-	int layer = pattern % DIM;
+	int layer = sequence % DIM;
 	qDebug() << "layer" << layer;
 	for(int i=0; i<DIM; ++i)
 		cube.ByPosition[layer][i] = 0b11111;
+}
+
+static void InOrder(int sequence)
+{
+	cube.Clear();
+	const int total = DIM * DIM * DIM;
+	int num = sequence % total;
+	cube.SetLED(num, 1);
+}
+
+QVariantList SetCubePattern(int pattern, int sequence)
+{
+	Emu_ClearIntensity();
+	switch(pattern)
+	{
+	case 0:
+		LayerInc(sequence);
+		break;
+	case 1:
+		InOrder(sequence);
+		break;
+	default:
+		// light of the corners
+		cube.Clear();
+		cube.ByPosition[0][0] = 0b10001;
+		cube.ByPosition[0][4] = 0b10001;
+		cube.ByPosition[4][0] = 0b10001;
+		cube.ByPosition[4][4] = 0b10001;
+	}
 	/*
 	int layer = (pattern / DIM ) % DIM;
 	int column = pattern % DIM;
