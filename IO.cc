@@ -18,6 +18,8 @@
 #include "IO.h"
 #include "Cube.h"
 
+#include <QDebug>
+
 // emulation implementation of the IO routines required for the Cube
 
 // array of decoder, layer, LED intensity
@@ -26,7 +28,7 @@
 // for the emulator each Set call will increase the intensity of the
 // given LED to accmulate an intensity which will need to periodically
 // be cleared.
-static uint8_t ByDecoder[DecoderCount][DIM][8];
+static int ByDecoder[DecoderCount][DIM][8];
 // bit field of currently enabled layers
 static uint8_t LayersEnabled;
 // bit field of currently enabled decoders
@@ -97,4 +99,56 @@ void SetLayerEnable(uint8_t layer, uint8_t enable)
 		LayersEnabled |= layer_bit;
 	else
 		LayersEnabled &= ~layer_bit;
+}
+
+QVariantList Emu_GetCubeIntensity()
+{
+	QVariantList layer;
+	for(uint8_t l=0; l<DIM; ++l)
+	{
+		QVariantList column;
+		QVariantList row;
+
+		row.push_back(ByDecoder[l][0][0]);
+		row.push_back(ByDecoder[l][0][1]);
+		row.push_back(ByDecoder[l][0][2]);
+		row.push_back(ByDecoder[l][0][3]);
+		row.push_back(ByDecoder[l][0][4]);
+		column.push_back(row);
+		row.clear();
+
+		row.push_back(ByDecoder[l][0][5]);
+		row.push_back(ByDecoder[l][0][6]);
+		row.push_back(ByDecoder[l][0][7]);
+		row.push_back(ByDecoder[l][1][0]);
+		row.push_back(ByDecoder[l][1][1]);
+		column.push_back(row);
+		row.clear();
+
+		row.push_back(ByDecoder[l][1][2]);
+		row.push_back(ByDecoder[l][1][3]);
+		row.push_back(ByDecoder[l][1][4]);
+		row.push_back(ByDecoder[l][1][5]);
+		row.push_back(ByDecoder[l][1][6]);
+		column.push_back(row);
+		row.clear();
+
+		row.push_back(ByDecoder[l][1][7]);
+		row.push_back(ByDecoder[l][2][0]);
+		row.push_back(ByDecoder[l][2][1]);
+		row.push_back(ByDecoder[l][2][2]);
+		row.push_back(ByDecoder[l][2][3]);
+		column.push_back(row);
+		row.clear();
+
+		row.push_back(ByDecoder[l][2][4]);
+		row.push_back(ByDecoder[l][2][5]);
+		row.push_back(ByDecoder[l][2][6]);
+		row.push_back(ByDecoder[l][2][7]);
+		row.push_back(ByDecoder[l][3][0]);
+		column.push_back(row);
+
+		layer.push_back(column);
+	}
+	return layer;
 }

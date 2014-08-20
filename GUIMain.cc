@@ -28,7 +28,7 @@
 GUIMain::GUIMain()
 {
 	rootContext()->setContextProperty("GUIMain", this);
-	SetCubePattern();
+	Data = SetCubePattern();
 }
 
 void GUIMain::keyPressEvent(QKeyEvent *e)

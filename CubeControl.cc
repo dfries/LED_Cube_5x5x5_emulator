@@ -17,15 +17,20 @@
 
 #include "CubeControl.h"
 #include "Cube.h"
+#include "IO.h"
+
+#include <QVariant>
 
 static Cube cube;
 
-void SetCubePattern()
+QVariantList SetCubePattern()
 {
+	Emu_ClearIntensity();
 	cube.Clear();
 	cube.Run(1);
 	cube.ByPosition[0][0] = 0x55;
 	cube.ByPosition[2][0] = 0x55;
 	cube.ByPosition[4][0] = 0x55;
 	cube.Run(1);
+	return Emu_GetCubeIntensity();
 }

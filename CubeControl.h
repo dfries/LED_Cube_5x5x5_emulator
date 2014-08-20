@@ -17,6 +17,8 @@
 #ifndef __CUBE_CONTROL_H__
 #define __CUBE_CONTROL_H__
 
-void SetCubePattern();
+#include <QVariant>
+
+QVariantList SetCubePattern();
 
 #endif // __CUBE_CONTROL_H__

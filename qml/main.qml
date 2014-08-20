@@ -24,9 +24,42 @@ Rectangle
 	height: 480
 	color: "black"
 
+	property real margin: 5
+
 	Text
 	{
 		color: "white"
 		text: "LED Cube light display emulator"
+	}
+	Graph
+	{
+		id: graph
+		anchors.left: parent.left
+		anchors.top: parent.top
+		anchors.right: parent.right
+		height: parent.height - 50
+		model: GUIMain.data
+	}
+
+	Row
+	{
+		anchors.left: parent.left
+		anchors.top: graph.bottom
+		anchors.right: parent.right
+		anchors.bottom: parent.bottom
+		anchors.topMargin: margin*2
+		spacing: margin
+
+		Button
+		{
+			action: step
+		}
+	}
+	Action
+	{
+		id: step
+		text: "&Step"
+		//shortcut: "Ctrl+S"
+		onTriggered: GUIMain.StepPattern()
 	}
 }

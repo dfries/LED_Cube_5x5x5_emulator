@@ -20,6 +20,8 @@
 
 #include <stdint.h>
 
+#include <QVariant>
+
 void IO_SetPin(uint8_t pin, uint8_t value);
 void IO_Delay(uint8_t delay);
 void SetDecoderValue(uint8_t decoder, uint8_t value);
@@ -27,5 +29,6 @@ void SetDecoderEnable(uint8_t decoder, uint8_t enable);
 void SetLayerEnable(uint8_t layer, uint8_t enable);
 
 void Emu_ClearIntensity();
+QVariantList Emu_GetCubeIntensity();
 
 #endif // __IO_H_
