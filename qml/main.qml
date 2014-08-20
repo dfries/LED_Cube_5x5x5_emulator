@@ -54,6 +54,22 @@ Rectangle
 		{
 			action: step
 		}
+		Button
+		{
+			text: "Animate"
+			onClicked: if(anim.runing)
+					anim.stop()
+				else
+					anim.start()
+			Timer
+			{
+				id: anim
+				interval: 66
+				repeat: true
+				running: false
+				onTriggered: GUIMain.StepPattern(pattern.text)
+			}
+		}
 		TextField
 		{
 			id: pattern
