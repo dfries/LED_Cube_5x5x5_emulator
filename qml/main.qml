@@ -74,7 +74,7 @@ Rectangle
 		{
 			id: pattern
 			text: "0"
-			onTextChanged: seq = 0
+			onTextChanged: if(text.length) {seq = 0; stepPattern()}
 		}
 	}
 	property int seq: 0
