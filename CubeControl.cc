@@ -31,6 +31,7 @@ static void LayerInc(int sequence)
 	qDebug() << "layer" << layer;
 	for(int i=0; i<DIM; ++i)
 		cube.ByPosition[layer][i] = 0b11111;
+	cube.Run(64);
 }
 
 static void InOrder(int sequence)
@@ -39,6 +40,7 @@ static void InOrder(int sequence)
 	const int total = DIM * DIM * DIM;
 	int num = sequence % total;
 	cube.SetLED(num, 1);
+	cube.Run(64);
 }
 
 static void Perimeter(int sequence)
@@ -76,6 +78,7 @@ static void Perimeter(int sequence)
 			enable = !enable;
 		}
 	}
+	cube.Run(64);
 }
 
 static void Shift(int sequence)
@@ -87,6 +90,7 @@ static void Shift(int sequence)
 		for(int i=0; i<DIM; ++i)
 			cube.ByPosition[2][i] = 0b00100;
 		cube.ByPosition[2][2] = 0b11111;
+		cube.Run(64);
 		return;
 	}
 	int index = (sequence-1) % 120;
@@ -102,6 +106,7 @@ static void Shift(int sequence)
 		cube.Shift(3, true);
 	else if(index < 120)
 		cube.Shift(-3, true);
+	cube.Run(64);
 }
 
 static void Fade(int sequence)
@@ -146,6 +151,7 @@ static void Fade(int sequence)
 		cube.ByPosition[0][0] = 0b01110;
 		break;
 	}
+	cube.Run(64);
 }
 
 QVariantList SetCubePattern(int pattern, int sequence)
@@ -175,6 +181,7 @@ QVariantList SetCubePattern(int pattern, int sequence)
 		cube.ByPosition[0][4] = 0b10001;
 		cube.ByPosition[4][0] = 0b10001;
 		cube.ByPosition[4][4] = 0b10001;
+		cube.Run(64);
 	}
 	/*
 	int layer = (pattern / DIM ) % DIM;
@@ -188,6 +195,5 @@ QVariantList SetCubePattern(int pattern, int sequence)
 	cube.ByPosition[2][0] = 0x55;
 	cube.ByPosition[4][0] = 0x55;
 	*/
-	cube.Run(1);
 	return Emu_GetCubeIntensity();
 }
