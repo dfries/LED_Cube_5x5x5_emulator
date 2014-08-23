@@ -14,9 +14,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef __CUBE_CONTROL_H__
-#define __CUBE_CONTROL_H__
 
-void SetCubePattern(int pattern, int sequence);
+#ifndef __IO_EMU_H_
+#define __IO_EMU_H_
 
-#endif // __CUBE_CONTROL_H__
+#include <stdint.h>
+#include <QVariant>
+
+// Emulation routines to clear the intensity and get the output values
+// after the pattern is displayed.  This file and routines would not be
+// included in a microcontroller project.
+
+void Emu_ClearIntensity();
+QVariantList Emu_GetCubeIntensity();
+
+#endif // __IO_EMU_H_

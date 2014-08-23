@@ -19,9 +19,7 @@
 #include "Cube.h"
 #include "IO.h"
 
-#include <QVariant>
-#include <QDebug>
-#include <math.h>
+#include <stdlib.h>
 
 static Cube cube;
 
@@ -29,7 +27,6 @@ static void LayerInc(int sequence)
 {
 	cube.Clear();
 	int layer = sequence % DIM;
-	qDebug() << "layer" << layer;
 	for(int i=0; i<DIM; ++i)
 		cube.ByPosition[layer][i] = 0b11111;
 	cube.Run(64);
@@ -266,9 +263,8 @@ static void Pong(int sequence)
 	cube.Run(64);
 }
 
-QVariantList SetCubePattern(int pattern, int sequence)
+void SetCubePattern(int pattern, int sequence)
 {
-	Emu_ClearIntensity();
 	switch(pattern)
 	{
 	case 0:
@@ -298,17 +294,4 @@ QVariantList SetCubePattern(int pattern, int sequence)
 		cube.ByPosition[4][4] = 0b10001;
 		cube.Run(64);
 	}
-	/*
-	int layer = (pattern / DIM ) % DIM;
-	int column = pattern % DIM;
-	qDebug() << "set led at" << layer << column;
-	cube.ByPosition[layer][column] = 1;
-	*/
-	/*
-	cube.Run(1);
-	cube.ByPosition[0][0] = 0x55;
-	cube.ByPosition[2][0] = 0x55;
-	cube.ByPosition[4][0] = 0x55;
-	*/
-	return Emu_GetCubeIntensity();
 }

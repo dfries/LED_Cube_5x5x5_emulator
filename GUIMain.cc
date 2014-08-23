@@ -24,17 +24,19 @@
 #include "GUIMain.h"
 
 #include "CubeControl.h"
+#include "IO_emu.h"
 
 GUIMain::GUIMain()
 {
 	rootContext()->setContextProperty("GUIMain", this);
-	Data = SetCubePattern(0, 0);
-	DataChanged();
+	StepPattern(0, 0);
 }
 
 void GUIMain::StepPattern(int pattern, int sequence)
 {
-	Data = SetCubePattern(pattern, sequence);
+	Emu_ClearIntensity();
+	SetCubePattern(pattern, sequence);
+	Data = Emu_GetCubeIntensity();
 	DataChanged();
 }
 

@@ -16,9 +16,8 @@
 */
 
 #include "IO.h"
+#include "IO_emu.h"
 #include "Cube.h"
-
-#include <QDebug>
 
 // emulation implementation of the IO routines required for the Cube
 // Each intersection of layer and decoder (or pin) is seen as on and will
