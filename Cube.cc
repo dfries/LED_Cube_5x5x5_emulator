@@ -152,12 +152,8 @@ void Cube::Reset()
 	}
 }
 
-void Cube::Setup()
+void Cube::Setup(OrganizeDisplay organize)
 {
-	// array of decoder, layer, with a bit per LED
-	// This is the LEDS connected to each decoder arrangement
-	uint8_t ByDecoder[DecoderCount][DIM];
-
 	// convert LED positions into per decoder values
 	/* Decoder and LED arrangement per level.
 	 * Decoder <decoder number> : LED number
@@ -184,6 +180,9 @@ void Cube::Setup()
 		ByDecoder[2][l] = (c3 >> 1) | (c4 << 4);
 		ByDecoder[3][l] = c4 >> 4;
 	}
+	// displaying by layer reads directly out of the ByDecoder array
+	if(organize == BY_LAYER)
+		return;
 
 	// generate a sequence of steps to display this pattern
 	// for each decoder:
@@ -225,7 +224,7 @@ void Cube::Setup()
 	}
 }
 
-void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
+void Cube::ExecuteDecoder(uint8_t iterations, uint8_t ex_delay)
 {
 	for(uint8_t i=0; i<iterations; ++i)
 	{
@@ -265,10 +264,73 @@ void Cube::Execute(uint8_t iterations, uint8_t ex_delay)
 	}
 }
 
-uint8_t Cube::Run(int iterations, uint8_t ex_delay)
+void Cube::ExecuteLayer(uint8_t iterations, uint8_t ex_delay)
+{
+	// For each layer the LEDs are enabled in sequence for each decoder
+	// until no decoder has any LEDs left to turn on, then the next layer
+	// is looked at.  The optimization is to skip over LEDs that are off on
+	// a given decoder.
+	for(uint8_t i=0; i<iterations; ++i)
+	{
+		// for each layer
+		for(uint8_t l=0; l<DIM; ++l)
+		{
+			SetLayerEnable(l, 1);
+			uint8_t decoder_led[DecoderCount] = {0, 0, 0, 0};
+			// while an LED needs to be on
+			for(;;)
+			{
+				bool needed = false;
+				// for each decoder
+				for(uint8_t d=0; d<DecoderCount; ++d)
+				{
+					uint8_t value = ByDecoder[d][l];
+					// for each LED (skip off positions)
+					for(;;)
+					{
+						if(decoder_led[d] >= 8)
+						{
+							InternalSetDecoderEnable(d, 0);
+							break;
+						}
+
+						uint8_t led = decoder_led[d];
+						uint8_t bit = 1<<led;
+						++decoder_led[d];
+						if(value & bit)
+						{
+							needed = true;
+							InternalSetDecoderValue(d, led);
+							InternalSetDecoderEnable(d, 1);
+							break;
+						}
+					}
+				}
+				if(!needed)
+					break;
+
+				IO_Delay(LED_Delay);
+			}
+			SetLayerEnable(l, 0);
+		}
+
+		for(uint8_t d=0; d<DecoderCount; ++d)
+			InternalSetDecoderEnable(d, 0);
+	}
+}
+
+uint8_t Cube::Run(int iterations, OrganizeDisplay organize, uint8_t ex_delay)
 {
 	Reset();
-	Setup();
-	Execute(iterations, ex_delay);
+	Setup(organize);
+	switch(organize)
+	{
+	case BY_DECODER:
+		ExecuteDecoder(iterations, ex_delay);
+		break;
+	case BY_LAYER:
+		ExecuteLayer(iterations, ex_delay);
+		break;
+	}
 	return GetCount();
 }

@@ -130,12 +130,24 @@ public:
 	// Set all LEDs to 0 in ByPosition
 	void Clear();
 
+	// Used to select different display organizations.
+	// BY_DECODER LEDs on one decoder will be turned on at one time,
+	// it will be more efficient if the same pattern is on multiple
+	// layers
+	// BY_LAYER works one layer at a time turing on one LEDs from each
+	// decoder before continuing to the next layer
+	enum OrganizeDisplay { BY_DECODER, BY_LAYER };
+
 	// Clear() is for the future pattern, Reset() is the current pin output
 	void Reset();
 	// create the sequence
-	void Setup();
-	// execute the sequence, add extra ex_delay at the end of each iteration
-	void Execute(uint8_t iterations, uint8_t ex_delay = 0);
+	void Setup(OrganizeDisplay organize);
+	// execute the decoder sequence, add extra ex_delay at the end of each
+	// iteration, use when BY_DECODER was setup
+	void ExecuteDecoder(uint8_t iterations, uint8_t ex_delay = 0);
+	// execute the layer sequence, add extra ex_delay at the end of each
+	// iteration, use when BY_LAYER was setup
+	void ExecuteLayer(uint8_t iterations, uint8_t ex_delay = 0);
 	// find out how many steps are in the sequence
 	uint8_t GetCount() const { return SequenceCount; }
 
@@ -143,13 +155,17 @@ public:
 	// the individual steps allows finding out how long a sequence
 	// is to add additional delays to better keep the intensity the same
 	// from one pattern to the next
-	uint8_t Run(int iterations, uint8_t ex_delay = 0);
+	uint8_t Run(int iterations, OrganizeDisplay organize = BY_LAYER,
+		uint8_t ex_delay = 0);
 
 	// array of layer, row, with the lower 5 bits being the column
 	// This is a layer, row, column physical arrangement of the LEDs.
 	uint8_t ByPosition[DIM][DIM];
 
 private:
+	// array of decoder, layer, with a bit per LED
+	// This is the LEDS connected to each decoder arrangement
+	uint8_t ByDecoder[DecoderCount][DIM];
 	// holds the data required for one combination of decoder and
 	// levels enabled for that decoder
 	struct Step

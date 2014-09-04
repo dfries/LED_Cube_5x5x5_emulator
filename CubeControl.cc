@@ -29,7 +29,8 @@ static void LayerInc(int sequence)
 	int layer = sequence % DIM;
 	for(int i=0; i<DIM; ++i)
 		cube.ByPosition[layer][i] = 0b11111;
-	cube.Run(64);
+	// default is BY_LAYER so have at least one test BY_DECODER
+	cube.Run(64, Cube::BY_DECODER);
 }
 
 static void InOrder(int sequence)
