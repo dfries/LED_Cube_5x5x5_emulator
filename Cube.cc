@@ -20,7 +20,7 @@
 
 Cube::Cube() :
 	SequenceCount(0),
-	LED_Delay(0)
+	LED_Delay(10)
 {
 	Clear();
 }
