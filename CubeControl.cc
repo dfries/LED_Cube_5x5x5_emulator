@@ -20,6 +20,7 @@
 #include "IO.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 static Cube cube;
 
@@ -165,10 +166,10 @@ static void drawLetter(char c)
 static void Fade(int sequence)
 {
 	cube.Clear();
-	const char *word = "ABIGAIL";
+	const char *word = "ABIGAIL ";
 	const int total = 20;
 	int step = sequence % total;
-	char letter = word[sequence/total%sizeof(word)];
+	char letter = word[sequence/total%strlen(word)];
 	drawLetter(letter);
 	if(step <= 4)
 	{
